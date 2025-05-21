@@ -221,6 +221,11 @@ import { useState } from 'react';
 import { Search, ClipboardCopy, Youtube, Globe, Loader, AlertCircle } from 'lucide-react';
 import BackgroundBeamsWithCollision from './BeamGround';
 
+
+// import { useState } from 'react';
+// import { Search, ClipboardCopy, Youtube, Globe, Loader, AlertCircle } from 'lucide-react';
+// import BackgroundBeamsWithCollision from './BeamGround';
+
 export default function YouTubeTranscriptSummarizer() {
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [summary, setSummary] = useState('');
