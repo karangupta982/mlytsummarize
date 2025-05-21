@@ -288,9 +288,10 @@ export default function YouTubeTranscriptSummarizer() {
   const extractVideoId = (url) => {
     if (!url) return null;
     
-    // Handle multiple YouTube URL formats
+    // Handle multiple YouTube URL formats and remove additional parameters
+    const cleanUrl = url.split('?')[0];  // Remove query parameters
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
+    const match = cleanUrl.match(regExp);
     return match && match[2].length === 11 ? match[2] : null;
   };
 
