@@ -1,5 +1,5 @@
 
-import { cn } from "../lib/utils";
+import { cn } from "./util.jsx";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useRef, useState, useEffect } from "react";
 
