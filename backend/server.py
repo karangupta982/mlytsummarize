@@ -749,7 +749,12 @@ nltk.download('punkt')
 
 app = Flask(__name__)
 # Configure CORS properly to allow requests from your React frontend
-CORS(app, resources={r"/*": {"origins": "*"}})
+# CORS(app, resources={r"/*": {"origins": "*"}})
+
+CORS(app, resources={r"/*": {"origins": [
+    "http://localhost:3000",
+    "https://mlytsummarize-kdso.vercel.app"
+]}})
 
 aai.settings.api_key = "85dfd1af7ea047f1abf886314afcbd7d"
 

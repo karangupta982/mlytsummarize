@@ -242,8 +242,10 @@ export default function YouTubeTranscriptSummarizer() {
     
     try {
       const endpoint = language === 'english' 
-        ? 'http://localhost:5000/getEnglishTranscript' 
-        : 'http://localhost:5000/getHindiTranscript';
+        ? 'https://mlytsummarize.onrender.com/getEnglishTranscript' 
+        // ? 'http://localhost:5000/getEnglishTranscript' 
+        : 'https://mlytsummarize.onrender.com/getHindiTranscript';
+        // : 'http://localhost:5000/getHindiTranscript';
 
       console.log(`Fetching summary from: ${endpoint} for URL: ${youtubeUrl}`);
       
