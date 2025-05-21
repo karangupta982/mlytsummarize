@@ -979,7 +979,7 @@ def get_english_transcript():
             print(f"Generated summary of {len(summary)} characters")
         except Exception as e:
             print(f"Error in summarization: {str(e)}")
-            summary = text[:1000] + "... (Summary unavailable, showing transcript excerpt)"
+            summary = text[:1000]
         
         # Return an empty response if summary is empty
         if not summary or len(summary.strip()) == 0:
@@ -1001,6 +1001,72 @@ def get_english_transcript():
                 print("Audio file deleted successfully")
         except Exception as e:
             print(f"Error deleting audio file: {str(e)}")
+
+# @app.route("/getHindiTranscript", methods=["GET"])
+# def get_hindi_transcript():
+#     videolink = request.args.get('videolink')
+#     if not videolink:
+#         return jsonify({"error": "No video link provided"}), 400
+
+#     print(f"Downloading and transcribing (Hindi): {videolink}")
+
+#     try:
+#         audio_file = download_audio(videolink)
+        
+#         # Add error checking for audio download
+#         if not os.path.exists(audio_file):
+#             raise Exception(f"Audio file {audio_file} was not created successfully")
+        
+#         # Check audio file size
+#         audio_size = os.path.getsize(audio_file)
+#         print(f"Audio file size: {audio_size} bytes")
+        
+#         if audio_size < 1000:  # Less than 1KB, likely an empty file
+#             raise Exception("Audio file is too small, possibly download failed")
+            
+#         config = aai.TranscriptionConfig(language_code="hi")
+#         transcriber = aai.Transcriber(config=config)
+        
+#         # Try to get transcript with retries
+#         try:
+#             text = get_transcript_with_retry(transcriber, audio_file)
+#         except Exception as e:
+#             print(f"Error getting Hindi transcript: {str(e)}")
+#             return jsonify({"summary": "Failed to transcribe Hindi audio. The video may not contain Hindi speech."}), 200
+        
+#         if not text:
+#             # If text is still empty, return a helpful error message
+#             return jsonify({"summary": "The video does not appear to contain any recognizable Hindi speech. Please try another video."}), 200
+        
+#         print(f"Successfully transcribed {len(text)} characters of Hindi text")
+        
+#         # For Hindi, we'll use a simpler approach since our extractive summarization
+#         # might not work well with Hindi. We'll return a portion of the transcript.
+#         try:
+#             # Try to tokenize Hindi text into sentences
+#             sentences = sent_tokenize(text)
+#             summary = " ".join(sentences[:min(10, len(sentences))])
+#         except Exception as e:
+#             print(f"Error in Hindi summarization: {str(e)}")
+#             summary = text[:1000]
+        
+#         # Add better debug output
+#         print(f"Returning Hindi summary response with {len(summary)} characters")
+#         return jsonify({"summary": summary})
+#     except Exception as e:
+#         # Log the full traceback
+#         traceback.print_exc()
+        
+#         print(f"Error in Hindi transcript: {str(e)}")
+#         return jsonify({"error": str(e), "traceback": traceback.format_exc()}), 500
+#     finally:
+#         try:
+#             if os.path.exists("sameAudio.mp3"):
+#                 os.remove("sameAudio.mp3")
+#                 print("Audio file deleted successfully")
+#         except Exception as e:
+#             print(f"Error deleting audio file: {str(e)}")
+
 
 @app.route("/getHindiTranscript", methods=["GET"])
 def get_hindi_transcript():
@@ -1044,11 +1110,42 @@ def get_hindi_transcript():
         # might not work well with Hindi. We'll return a portion of the transcript.
         try:
             # Try to tokenize Hindi text into sentences
-            sentences = sent_tokenize(text)
-            summary = " ".join(sentences[:min(10, len(sentences))])
+            # Look for both Hindi purna viram (।) and Latin period (.) as sentence delimiters
+            hindi_sentences = []
+            current_sentence = ""
+            
+            for char in text:
+                current_sentence += char
+                if char in ['।', '.']:  # Both Hindi purna viram and Latin period
+                    hindi_sentences.append(current_sentence.strip())
+                    current_sentence = ""
+            
+            # Add any remaining text as a sentence if it exists
+            if current_sentence.strip():
+                hindi_sentences.append(current_sentence.strip())
+            
+            # If tokenization worked, use the first few sentences
+            if hindi_sentences:
+                summary = " ".join(hindi_sentences[:min(25, len(hindi_sentences))])
+            else:
+                # Fallback to NLTK's sent_tokenize with additional handling
+                sentences = sent_tokenize(text)
+                summary = " ".join(sentences[:min(25, len(sentences))])
         except Exception as e:
             print(f"Error in Hindi summarization: {str(e)}")
-            summary = text[:1000] + "... (Summary unavailable, showing transcript excerpt)"
+            # If all else fails, truncate the text but ensure it ends with a Hindi purna viram or period
+            partial_text = text[:1000]
+            # Find the last purna viram in the partial text
+            last_purna_viram = partial_text.rfind('।')
+            last_period = partial_text.rfind('.')
+            
+            # Use the later of the two ending marks
+            last_mark = max(last_purna_viram, last_period)
+            
+            if last_mark > 0:
+                summary = text[:last_mark + 1]  # Include the punctuation mark
+            else:
+                summary = partial_text  # If no sentence ending found, use as is
         
         # Add better debug output
         print(f"Returning Hindi summary response with {len(summary)} characters")
