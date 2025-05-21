@@ -1,0 +1,8 @@
+Flask
+yt-dlp
+assemblyai
+transformers
+numpy
+scikit-learn
+nltk
+langdetect
