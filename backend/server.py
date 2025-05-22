@@ -1962,3 +1962,666 @@ def ping():
 # for production
 if __name__ == "__main__":
     app.run(debug=False, host="0.0.0.0")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# with SSL certificate
+# from flask import Flask, request, jsonify
+# import yt_dlp
+# import assemblyai as aai
+# import os
+# import nltk
+# from nltk.tokenize import sent_tokenize
+# from sklearn.feature_extraction import text
+# from sklearn.decomposition import TruncatedSVD
+# from flask_cors import CORS
+# import time
+# import traceback
+# import re
+# import ssl
+# import urllib3
+# import requests
+# from youtube_transcript_api import YouTubeTranscriptApi  
+
+# # Disable SSL warnings globally
+# urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# # Disable SSL verification globally
+# ssl._create_default_https_context = ssl._create_unverified_context
+
+# # Monkey patch requests to disable SSL verification
+# original_request = requests.Session.request
+# def patched_request(self, method, url, **kwargs):
+#     kwargs.setdefault('verify', False)
+#     return original_request(self, method, url, **kwargs)
+# requests.Session.request = patched_request
+
+# # Download ONLY the punkt package that's needed (not punkt_tab)
+# nltk.download('punkt')
+
+# app = Flask(__name__)
+# # Configure CORS properly to allow requests from your React frontend
+# CORS(app, resources={r"/*": {"origins": [
+#     "http://localhost:5173",
+#     "https://mlytsummarize-kdso.vercel.app",
+#     "https://mlytsummarize-omjx.vercel.app"
+# ]}})
+
+# aai.settings.api_key = "85dfd1af7ea047f1abf886314afcbd7d"
+
+# # More aggressive yt_dlp options for problematic SSL environments
+# ydl_opts_base = {
+#     'format': 'worstaudio[ext=m4a]/worstaudio/worst',
+#     'outtmpl': '/tmp/sameAudio.%(ext)s',
+#     'postprocessors': [{
+#         'key': 'FFmpegExtractAudio',
+#         'preferredcodec': 'mp3',
+#     }],
+#     # Complete SSL bypass
+#     'nocheckcertificate': True,
+#     'no_check_certificate': True,
+#     'ignore_certificate_errors': True,
+#     'ignore_ssl_errors': True,
+#     'prefer_insecure': True,
+#     # Network settings
+#     'socket_timeout': 30,
+#     'retries': 1,
+#     'fragment_retries': 1,
+#     'sleep_interval': 1,
+#     'max_sleep_interval': 2,
+#     # User agent rotation
+#     'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+#     # Additional bypass options
+#     'extractor_retries': 1,
+#     'file_access_retries': 1,
+#     'skip_unavailable_fragments': True,
+#     'keepvideo': False,
+#     'no_warnings': True,
+# }
+
+# def download_audio_alternative_method(video_url):
+#     """Alternative download method using different extractors and approaches"""
+    
+#     # Configuration 1: Standard with aggressive SSL bypass
+#     config1 = {
+#         **ydl_opts_base,
+#         'http_headers': {
+#             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
+#             'Accept': '*/*',
+#             'Accept-Language': 'en-US,en;q=0.5',
+#             'Accept-Encoding': 'gzip, deflate',
+#             'Connection': 'keep-alive',
+#         }
+#     }
+    
+#     # Configuration 2: Using different extractor approach
+#     config2 = {
+#         'format': 'worst',
+#         'outtmpl': '/tmp/sameAudio.%(ext)s',
+#         'nocheckcertificate': True,
+#         'no_warnings': True,
+#         'quiet': True,
+#         'no_check_certificate': True,
+#         'prefer_insecure': True,
+#         'ignore_certificate_errors': True,
+#         'socket_timeout': 20,
+#         'retries': 0,  # No retries to fail fast
+#     }
+    
+#     # Configuration 3: Minimal configuration
+#     config3 = {
+#         'format': 'worst[ext=mp4]/worst',
+#         'outtmpl': '/tmp/sameAudio.%(ext)s',
+#         'nocheckcertificate': True,
+#         'quiet': True,
+#         'no_warnings': True,
+#         'socket_timeout': 15,
+#     }
+    
+#     # Configuration 4: Using legacy extractor
+#     config4 = {
+#         'format': 'worstaudio',
+#         'outtmpl': '/tmp/sameAudio.%(ext)s',
+#         'nocheckcertificate': True,
+#         'legacy_server_connect': True,
+#         'prefer_insecure': True,
+#         'no_check_certificate': True,
+#     }
+    
+#     configs = [config1, config2, config3, config4]
+    
+#     for i, config in enumerate(configs):
+#         try:
+#             print(f"Trying download configuration {i+1}")
+            
+#             # Set environment variables to bypass SSL
+#             env = os.environ.copy()
+#             env['PYTHONHTTPSVERIFY'] = '0'
+#             env['CURL_CA_BUNDLE'] = ''
+#             env['REQUESTS_CA_BUNDLE'] = ''
+            
+#             with yt_dlp.YoutubeDL(config) as ydl:
+#                 error_code = ydl.download([video_url])
+#                 if error_code == 0:
+#                     # Check for downloaded files
+#                     possible_files = [
+#                         "/tmp/sameAudio.mp3", 
+#                         "/tmp/sameAudio.m4a", 
+#                         "/tmp/sameAudio.mp4",
+#                         "/tmp/sameAudio.webm"
+#                     ]
+#                     for file_path in possible_files:
+#                         if os.path.exists(file_path):
+#                             print(f"Successfully downloaded: {file_path}")
+#                             return file_path
+            
+#         except Exception as e:
+#             print(f"Configuration {i+1} failed: {str(e)}")
+#             if i == len(configs) - 1:  # Last config
+#                 raise Exception(f"All download configurations failed. Last error: {str(e)}")
+#             continue
+    
+#     raise Exception("Audio file not found after all download attempts")
+
+# def get_transcript_from_youtube_api(videolink, language='en'):
+#     """Enhanced YouTube transcript API with better error handling"""
+#     try:
+#         # Extract video ID from various YouTube URL formats
+#         video_id_patterns = [
+#             r'(?:v=|\/)([0-9A-Za-z_-]{11}).*',
+#             r'youtu\.be\/([0-9A-Za-z_-]{11})',
+#             r'youtube\.com\/embed\/([0-9A-Za-z_-]{11})',
+#             r'youtube\.com\/watch\?v=([0-9A-Za-z_-]{11})'
+#         ]
+        
+#         video_id = None
+#         for pattern in video_id_patterns:
+#             match = re.search(pattern, videolink)
+#             if match:
+#                 video_id = match.group(1)
+#                 break
+        
+#         if not video_id:
+#             raise Exception("Could not extract video ID from URL")
+        
+#         print(f"Extracted video ID: {video_id}")
+        
+#         # Try different language codes based on the requested language
+#         if language == 'hi':
+#             lang_codes = ['hi', 'hi-IN', 'hi-Latn']
+#         else:
+#             lang_codes = ['en', 'en-US', 'en-GB', 'en-CA', 'en-AU']
+        
+#         transcript_list = None
+#         used_lang = None
+        
+#         # Try specific language codes first
+#         for lang_code in lang_codes:
+#             try:
+#                 transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=[lang_code])
+#                 used_lang = lang_code
+#                 print(f"Successfully got transcript using language code: {lang_code}")
+#                 break
+#             except Exception as e:
+#                 print(f"Failed to get transcript for {lang_code}: {str(e)}")
+#                 continue
+        
+#         # If specific languages fail, try auto-generated
+#         if not transcript_list:
+#             try:
+#                 transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+#                 used_lang = "auto"
+#                 print("Successfully got auto-generated transcript")
+#             except Exception as e:
+#                 # Try to get list of available transcripts
+#                 try:
+#                     available_transcripts = YouTubeTranscriptApi.list_transcripts(video_id)
+#                     print("Available transcripts:")
+#                     for transcript in available_transcripts:
+#                         print(f"  - {transcript.language_code}: {transcript.language}")
+                    
+#                     # Try the first available transcript
+#                     first_transcript = next(iter(available_transcripts))
+#                     transcript_list = first_transcript.fetch()
+#                     used_lang = first_transcript.language_code
+#                     print(f"Using first available transcript: {used_lang}")
+                    
+#                 except Exception as list_error:
+#                     raise Exception(f"Could not retrieve any transcript. Available transcripts error: {str(list_error)}. Original error: {str(e)}")
+        
+#         # Convert transcript list to text
+#         transcript_text = ' '.join([item['text'] for item in transcript_list])
+        
+#         if not transcript_text or len(transcript_text.strip()) == 0:
+#             raise Exception("Transcript is empty")
+        
+#         print(f"Retrieved transcript with {len(transcript_text)} characters using {used_lang}")
+#         return transcript_text
+        
+#     except Exception as e:
+#         raise Exception(f"YouTube transcript API failed: {str(e)}")
+
+# def extractive_summarization(transcript):
+#     """
+#     Summarizes the input transcript using the Extractive Summarization technique.
+#     Ensures summaries end with complete sentences (ending with full stops).
+#     """
+#     try:
+#         # If the transcript is empty, return a default message
+#         if not transcript or len(transcript.strip()) == 0:
+#             return "The transcript appears to be empty. Please try a different video."
+        
+#         # Use the NLTK punkt tokenizer to split into sentences
+#         sentences = sent_tokenize(transcript)
+        
+#         print(f"Number of sentences detected: {len(sentences)}")
+        
+#         if len(sentences) <= 5:  # If transcript is very short, return it as is
+#             return transcript
+        
+#         # Vectorize sentences
+#         vectorizer = text.CountVectorizer(stop_words='english')
+        
+#         try:
+#             X = vectorizer.fit_transform(sentences)
+            
+#             # Check if we can perform SVD
+#             if X.shape[0] < 2 or X.shape[1] < 2:
+#                 return transcript
+                
+#             # Perform Truncated SVD for dimensionality reduction
+#             n_components = min(1, X.shape[1] - 1)  # Ensure we don't exceed matrix dimensions
+#             svd = TruncatedSVD(n_components=n_components, random_state=42)
+#             svd.fit(X)
+#             components = svd.transform(X)
+            
+#             # Rank sentences based on the first singular vector
+#             ranked_sentences = [item[0] for item in sorted(enumerate(components), key=lambda item: -item[1])]
+            
+#             # Select top sentences for summary (at least 3 sentences or 30% of the original)
+#             num_sentences = max(3, int(0.3 * len(sentences)))
+#             selected_sentences = sorted(ranked_sentences[:min(num_sentences, len(ranked_sentences))])
+            
+#             # Compile the final summary
+#             summary = " ".join([sentences[idx] for idx in selected_sentences])
+#             return summary
+#         except Exception as e:
+#             print(f"Error during summarization process: {str(e)}")
+#             # Return first few complete sentences if summarization fails
+#             return " ".join(sentences[:min(10, len(sentences))])
+#     except Exception as e:
+#         print(f"Error in sentence tokenization: {str(e)}")
+#         # If tokenization fails, return complete sentences from the beginning
+#         if transcript and len(transcript) > 0:
+#             # Get the first 1000 characters but ensure we end with a complete sentence
+#             partial_text = transcript[:1000]
+#             # Find the last period in the partial text
+#             last_period_index = partial_text.rfind('.')
+#             if last_period_index > 0:
+#                 return transcript[:last_period_index + 1]  # Include the period
+#             else:
+#                 # If no period is found, return as is without ellipsis
+#                 return partial_text
+#         else:
+#             return "Unable to generate summary. The video may not contain sufficient spoken content."
+
+# def get_transcript_with_retry(transcriber, audio_file, max_retries=2):
+#     """Attempts to get a transcript with retries"""
+#     for attempt in range(max_retries):
+#         try:
+#             transcript = transcriber.transcribe(audio_file)
+            
+#             # Check if transcript has text
+#             if hasattr(transcript, 'text') and transcript.text:
+#                 text_content = transcript.text
+#                 if len(text_content) > 0:
+#                     print(f"Successful transcription on attempt {attempt+1} with {len(text_content)} characters")
+#                     return text_content
+#                 else:
+#                     print(f"Empty transcript.text on attempt {attempt+1}")
+#             else:
+#                 print(f"No text attribute found on attempt {attempt+1}")
+                
+#                 # Try to find the text in other attributes
+#                 for attr in ['transcript', 'result', 'content', 'output']:
+#                     if hasattr(transcript, attr):
+#                         content = getattr(transcript, attr)
+#                         if isinstance(content, str) and len(content) > 0:
+#                             return content
+                
+#                 # If all else fails, check if there's a summary attribute
+#                 if hasattr(transcript, 'summary') and transcript.summary:
+#                     return f"Summary from AssemblyAI: {transcript.summary}"
+                    
+#             # If we get here, we need to try again
+#             if attempt < max_retries - 1:
+#                 print(f"Retry transcription in 2 seconds...")
+#                 time.sleep(2)
+                
+#         except Exception as e:
+#             print(f"Transcription error on attempt {attempt+1}: {str(e)}")
+#             if attempt < max_retries - 1:
+#                 print(f"Retry transcription in 2 seconds...")
+#                 time.sleep(2)
+    
+#     # If we get here, all retries failed
+#     raise Exception("Failed to get transcript after multiple attempts")
+
+# @app.route("/getEnglishTranscript", methods=["GET"])
+# def get_english_transcript():
+#     videolink = request.args.get('videolink')
+#     if not videolink:
+#         return jsonify({"error": "No video link provided"}), 400
+
+#     print(f"Processing video: {videolink}")
+#     audio_file = None
+
+#     try:
+#         # Method 1: Try YouTube transcript API first (most reliable)
+#         try:
+#             print("Attempting to get transcript using YouTube transcript API...")
+#             text = get_transcript_from_youtube_api(videolink, language='en')
+#             print(f"Successfully got transcript from YouTube API: {len(text)} characters")
+            
+#             # Generate summary from transcript
+#             summary = extractive_summarization(text)
+#             print(f"Generated summary of {len(summary)} characters")
+            
+#             return jsonify({
+#                 "summary": summary, 
+#                 "method": "youtube-api",
+#                 "status": "success"
+#             })
+            
+#         except Exception as api_error:
+#             print(f"YouTube transcript API failed: {api_error}")
+#             print("Note: This video may not have captions available.")
+        
+#         # Method 2: Try yt-dlp with alternative configurations (only if transcript API fails)
+#         print("Attempting audio download with alternative methods...")
+#         try:
+#             audio_file = download_audio_alternative_method(videolink)
+            
+#             if not os.path.exists(audio_file):
+#                 raise Exception(f"Audio file {audio_file} was not created successfully")
+            
+#             # Check audio file size
+#             audio_size = os.path.getsize(audio_file)
+#             print(f"Audio file size: {audio_size} bytes")
+            
+#             if audio_size < 1000:
+#                 raise Exception("Audio file is too small, possibly download failed")
+
+#             transcriber = aai.Transcriber()
+#             text = get_transcript_with_retry(transcriber, audio_file)
+            
+#             if not text:
+#                 return jsonify({
+#                     "summary": "The video does not appear to contain any recognizable speech. Please try another video.",
+#                     "method": "audio-failed",
+#                     "status": "warning"
+#                 }), 200
+            
+#             print(f"Successfully transcribed {len(text)} characters of text")
+            
+#             # Generate summary from transcript
+#             try:
+#                 summary = extractive_summarization(text)
+#                 print(f"Generated summary of {len(summary)} characters")
+#             except Exception as e:
+#                 print(f"Error in summarization: {str(e)}")
+#                 summary = text[:1000] + "..." if len(text) > 1000 else text
+            
+#             if not summary or len(summary.strip()) == 0:
+#                 summary = "Unable to generate summary for this video. The content may not contain sufficient speech."
+            
+#             print(f"Returning summary response with {len(summary)} characters")
+#             return jsonify({
+#                 "summary": summary, 
+#                 "method": "assemblyai",
+#                 "status": "success"
+#             })
+            
+#         except Exception as download_error:
+#             print(f"Audio download/transcription failed: {download_error}")
+            
+#             # Final fallback - return helpful error
+#             return jsonify({
+#                 "error": "Unable to process this video",
+#                 "details": "Both YouTube captions and audio extraction failed",
+#                 "reasons": [
+#                     "The video may not have captions or clear audio",
+#                     "The video might be private, restricted, or deleted", 
+#                     "Network/SSL certificate issues on the server",
+#                     "The video format may not be supported"
+#                 ],
+#                 "suggestions": [
+#                     "Try a different public YouTube video",
+#                     "Ensure the video has captions or clear speech",
+#                     "Try a shorter video (under 10 minutes)"
+#                 ],
+#                 "method": "both-failed",
+#                 "status": "error"
+#             }), 500
+        
+#     except Exception as e:
+#         traceback.print_exc()
+#         print(f"Comprehensive error in English transcript: {str(e)}")
+#         return jsonify({
+#             "error": f"Failed to process video: {str(e)}", 
+#             "suggestion": "Please try a different YouTube video with captions.",
+#             "status": "error"
+#         }), 500
+#     finally:
+#         # Clean up audio files
+#         cleanup_files = [
+#             "/tmp/sameAudio.mp3", "/tmp/sameAudio.m4a", 
+#             "/tmp/sameAudio.mp4", "/tmp/sameAudio.webm",
+#             "sameAudio.mp3", "sameAudio.m4a"
+#         ]
+#         if audio_file:
+#             cleanup_files.append(audio_file)
+        
+#         for file_path in cleanup_files:
+#             try:
+#                 if os.path.exists(file_path):
+#                     os.remove(file_path)
+#                     print(f"Cleaned up: {file_path}")
+#             except Exception as e:
+#                 print(f"Error cleaning up {file_path}: {str(e)}")
+
+# @app.route("/getHindiTranscript", methods=["GET"])
+# def get_hindi_transcript():
+#     videolink = request.args.get('videolink')
+#     if not videolink:
+#         return jsonify({"error": "No video link provided"}), 400
+
+#     print(f"Processing Hindi video: {videolink}")
+#     audio_file = None
+
+#     try:
+#         # Method 1: Try YouTube transcript API first for Hindi
+#         try:
+#             print("Attempting to get Hindi transcript using YouTube transcript API...")
+#             text = get_transcript_from_youtube_api(videolink, language='hi')
+#             print(f"Successfully got Hindi transcript from YouTube API: {len(text)} characters")
+            
+#             # Process Hindi text - simple approach
+#             try:
+#                 # Split by Hindi purna viram and periods
+#                 sentences = []
+#                 current_sentence = ""
+                
+#                 for char in text:
+#                     current_sentence += char
+#                     if char in ['।', '.', '!', '?']:
+#                         if current_sentence.strip():
+#                             sentences.append(current_sentence.strip())
+#                         current_sentence = ""
+                
+#                 if current_sentence.strip():
+#                     sentences.append(current_sentence.strip())
+                
+#                 # Take first 15-20 sentences for summary
+#                 if sentences:
+#                     summary = " ".join(sentences[:min(20, len(sentences))])
+#                 else:
+#                     # Fallback to NLTK
+#                     sentences = sent_tokenize(text)
+#                     summary = " ".join(sentences[:min(15, len(sentences))])
+                    
+#             except Exception as e:
+#                 print(f"Error in Hindi summarization: {str(e)}")
+#                 # Simple truncation fallback
+#                 summary = text[:1500] if len(text) > 1500 else text
+            
+#             return jsonify({
+#                 "summary": summary, 
+#                 "method": "youtube-api",
+#                 "status": "success"
+#             })
+            
+#         except Exception as api_error:
+#             print(f"YouTube Hindi transcript API failed: {api_error}")
+        
+#         # Method 2: Fallback to audio download for Hindi
+#         try:
+#             audio_file = download_audio_alternative_method(videolink)
+            
+#             if not os.path.exists(audio_file):
+#                 raise Exception(f"Audio file {audio_file} was not created successfully")
+            
+#             audio_size = os.path.getsize(audio_file)
+#             print(f"Audio file size: {audio_size} bytes")
+            
+#             if audio_size < 1000:
+#                 raise Exception("Audio file is too small")
+                
+#             config = aai.TranscriptionConfig(language_code="hi")
+#             transcriber = aai.Transcriber(config=config)
+            
+#             text = get_transcript_with_retry(transcriber, audio_file)
+            
+#             if not text:
+#                 return jsonify({
+#                     "summary": "The video does not appear to contain any recognizable Hindi speech.",
+#                     "method": "audio-failed", 
+#                     "status": "warning"
+#                 }), 200
+            
+#             print(f"Successfully transcribed {len(text)} characters of Hindi text")
+            
+#             # Process Hindi text (same as above)
+#             try:
+#                 sentences = []
+#                 current_sentence = ""
+                
+#                 for char in text:
+#                     current_sentence += char
+#                     if char in ['।', '.', '!', '?']:
+#                         if current_sentence.strip():
+#                             sentences.append(current_sentence.strip())
+#                         current_sentence = ""
+                
+#                 if current_sentence.strip():
+#                     sentences.append(current_sentence.strip())
+                
+#                 if sentences:
+#                     summary = " ".join(sentences[:min(25, len(sentences))])
+#                 else:
+#                     sentences = sent_tokenize(text)
+#                     summary = " ".join(sentences[:min(20, len(sentences))])
+                    
+#             except Exception as e:
+#                 print(f"Error in Hindi summarization: {str(e)}")
+#                 summary = text[:1500] if len(text) > 1500 else text
+            
+#             return jsonify({
+#                 "summary": summary, 
+#                 "method": "assemblyai",
+#                 "status": "success"
+#             })
+            
+#         except Exception as download_error:
+#             print(f"Hindi audio processing failed: {download_error}")
+            
+#             return jsonify({
+#                 "error": "Unable to process this Hindi video",
+#                 "details": "Both YouTube captions and audio extraction failed",
+#                 "suggestion": "Please try a different Hindi YouTube video with captions",
+#                 "status": "error"
+#             }), 500
+        
+#     except Exception as e:
+#         traceback.print_exc()
+#         print(f"Error in Hindi transcript: {str(e)}")
+#         return jsonify({
+#             "error": f"Failed to process Hindi video: {str(e)}", 
+#             "suggestion": "Please try a different Hindi video.",
+#             "status": "error"
+#         }), 500
+#     finally:
+#         # Clean up audio files
+#         cleanup_files = [
+#             "/tmp/sameAudio.mp3", "/tmp/sameAudio.m4a", 
+#             "/tmp/sameAudio.mp4", "/tmp/sameAudio.webm",
+#             "sameAudio.mp3", "sameAudio.m4a"
+#         ]
+#         if audio_file:
+#             cleanup_files.append(audio_file)
+        
+#         for file_path in cleanup_files:
+#             try:
+#                 if os.path.exists(file_path):
+#                     os.remove(file_path)
+#                     print(f"Cleaned up: {file_path}")
+#             except Exception as e:
+#                 print(f"Error cleaning up {file_path}: {str(e)}")
+
+# @app.route("/ping", methods=["GET"])
+# def ping():
+#     """Health check endpoint"""
+#     return jsonify({"status": "ok", "message": "Server is running"}), 200
+
+# @app.route("/test-ssl", methods=["GET"])
+# def test_ssl():
+#     """Test SSL configuration"""
+#     try:
+#         import requests
+#         response = requests.get("https://httpbin.org/get", verify=False, timeout=10)
+#         return jsonify({
+#             "ssl_test": "passed", 
+#             "status_code": response.status_code,
+#             "message": "SSL bypass working"
+#         }), 200
+#     except Exception as e:
+#         return jsonify({
+#             "ssl_test": "failed", 
+#             "error": str(e)
+#         }), 500
+
+# if __name__ == "__main__":
+#     # Set environment variables for SSL bypass
+#     os.environ['PYTHONHTTPSVERIFY'] = '0'
+#     os.environ['CURL_CA_BUNDLE'] = ''
+#     os.environ['REQUESTS_CA_BUNDLE'] = ''
+    
+#     app.run(debug=False, host="0.0.0.0")
