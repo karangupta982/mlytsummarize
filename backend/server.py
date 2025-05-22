@@ -749,12 +749,12 @@ nltk.download('punkt')
 
 app = Flask(__name__)
 # Configure CORS properly to allow requests from your React frontend
-# CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-CORS(app, resources={r"/*": {"origins": [
-    "http://localhost:3000",
-    "https://mlytsummarize-kdso.vercel.app"
-]}})
+# CORS(app, resources={r"/*": {"origins": [
+#     "http://localhost:3000",
+#     "https://mlytsummarize-kdso.vercel.app"
+# ]}})
 
 aai.settings.api_key = "85dfd1af7ea047f1abf886314afcbd7d"
 
@@ -1177,13 +1177,13 @@ def ping():
 
 
 # for development
-# if __name__ == "__main__":
-#     app.run(debug=True, host="0.0.0.0")
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0")
 
 
 # for production
-if __name__ == "__main__":
-    app.run(debug=False, host="0.0.0.0")
+# if __name__ == "__main__":
+#     app.run(debug=False, host="0.0.0.0")
 
 
 
