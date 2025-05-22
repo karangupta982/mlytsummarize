@@ -1499,7 +1499,8 @@ app = Flask(__name__)
 # CORS(app, resources={r"/*": {"origins": "*"}})
 CORS(app, resources={r"/*": {"origins": [
     "http://localhost:5173",
-    "https://mlytsummarize-kdso.vercel.app"
+    "https://mlytsummarize-kdso.vercel.app",
+    "https://mlytsummarize-omjx.vercel.app/"
 ]}})
 
 aai.settings.api_key = "85dfd1af7ea047f1abf886314afcbd7d"
