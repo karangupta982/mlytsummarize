@@ -1713,6 +1713,9 @@ import re
 from youtube_transcript_api import YouTubeTranscriptApi
 from groq import Groq
 import json
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Download ONLY the punkt package that's needed (not punkt_tab)
 nltk.download('punkt')
@@ -1729,7 +1732,7 @@ aai.settings.api_key = "85dfd1af7ea047f1abf886314afcbd7d"
 
 # Initialize Groq client
 groq_client = Groq(
-    api_key="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"
+    api_key=os.getenv("GROQ_API_KEY")
 )
 
 # Enhanced yt_dlp options for cloud environments
