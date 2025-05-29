@@ -1696,7 +1696,7 @@
 
 
 
-# groq api implemented
+
 # groq api implemented
 from flask import Flask, request, jsonify
 import yt_dlp
@@ -1791,7 +1791,7 @@ def get_transcript_from_youtube_api(videolink, language='en'):
         if not video_id:
             raise Exception("Could not extract video ID from URL")
         
-        print(f"Extracted video ID: {video_id}")
+        # print(f"Extracted video ID: {video_id}")
         
         # Try different language codes based on the requested language
         if language == 'hi':
@@ -1807,7 +1807,7 @@ def get_transcript_from_youtube_api(videolink, language='en'):
             try:
                 transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=[lang_code])
                 used_lang = lang_code
-                print(f"Successfully got transcript using language code: {lang_code}")
+                # print(f"Successfully got transcript using language code: {lang_code}")
                 break
             except Exception as e:
                 print(f"Failed to get transcript for {lang_code}: {str(e)}")
@@ -1843,7 +1843,7 @@ def groq_summarization(transcript, language='en'):
         if not transcript or len(transcript.strip()) == 0:
             raise Exception("Empty transcript provided")
         
-        print(f"🚀 Starting Groq summarization for {len(transcript)} characters in {language}")
+        # print(f"🚀 Starting Groq summarization for {len(transcript)} characters in {language}")
         
         # Check if Groq client is properly initialized
         if not groq_client:
@@ -1899,7 +1899,7 @@ def groq_summarization(transcript, language='en'):
             
             Summary:"""
         
-        print(f"📤 Sending request to Groq API with prompt length: {len(prompt)}")
+        #  print(f"📤 Sending request to Groq API with prompt length: {len(prompt)}")
         
         # Make the API call to Groq with better parameters
         completion = groq_client.chat.completions.create(
@@ -1918,7 +1918,7 @@ def groq_summarization(transcript, language='en'):
             presence_penalty=0.1
         )
         
-        print("📥 Received response from Groq API")
+        # print("📥 Received response from Groq API")
         
         # Extract the summary
         summary = completion.choices[0].message.content.strip()
@@ -1931,7 +1931,7 @@ def groq_summarization(transcript, language='en'):
         if len(summary) > len(transcript) * 0.8:  # If summary is more than 80% of original
             raise Exception("Groq returned content that's too similar to original (possible echo)")
         
-        print(f"✅ Successfully generated Groq summary: {len(summary)} characters")
+        # print(f"✅ Successfully generated Groq summary: {len(summary)} characters")
         
         # Return the summary with a marker
         return {"summary": summary, "method": "groq", "success": True}
@@ -1943,12 +1943,16 @@ def groq_summarization(transcript, language='en'):
         # Log specific error types for debugging
         if "rate_limit" in error_msg.lower():
             print("🚫 ERROR TYPE: Rate limit exceeded")
+            pass
         elif "token" in error_msg.lower():
             print("🚫 ERROR TYPE: Token limit exceeded")
+            pass
         elif "api" in error_msg.lower() or "auth" in error_msg.lower():
             print("🚫 ERROR TYPE: API authentication or connection issue")
+            pass
         else:
             print(f"🚫 ERROR TYPE: Unknown - {error_msg}")
+            pass
         
         # Return error info instead of raising exception
         return {"summary": None, "method": "groq", "success": False, "error": error_msg}
@@ -1958,7 +1962,7 @@ def extractive_summarization(transcript):
     Fallback summarization using the original Extractive Summarization technique.
     """
     try:
-        print("🔄 Using extractive summarization fallback")
+        # print("🔄 Using extractive summarization fallback")
         
         # If the transcript is empty, return a default message
         if not transcript or len(transcript.strip()) == 0:
@@ -1999,11 +2003,11 @@ def extractive_summarization(transcript):
             summary = " ".join([sentences[idx] for idx in selected_sentences])
             return summary
         except Exception as e:
-            print(f"Error during summarization process: {str(e)}")
+            # print(f"Error during summarization process: {str(e)}")
             # Return first few complete sentences if summarization fails
             return " ".join(sentences[:min(10, len(sentences))])
     except Exception as e:
-        print(f"Error in sentence tokenization: {str(e)}")
+        # print(f"Error in sentence tokenization: {str(e)}")
         # If tokenization fails, return complete sentences from the beginning
         if transcript and len(transcript) > 0:
             # Get the first 1000 characters but ensure we end with a complete sentence
@@ -2022,16 +2026,16 @@ def smart_summarization(transcript, language='en'):
     """
     Try Groq first, with extractive summarization as explicit fallback
     """
-    print(f"🎯 Starting smart summarization for {language} text")
+    # print(f"🎯 Starting smart summarization for {language} text")
     
     # First, try Groq
     groq_result = groq_summarization(transcript, language)
     
     if groq_result["success"]:
-        print("✅ Groq summarization successful")
+        # print("✅ Groq summarization successful")
         return groq_result["summary"], "groq"
     else:
-        print(f"❌ Groq failed: {groq_result['error']}")
+        # print(f"❌ Groq failed: {groq_result['error']}")
         print("🔄 Falling back to extractive summarization")
         
         # Fallback to extractive summarization
@@ -2039,7 +2043,7 @@ def smart_summarization(transcript, language='en'):
             extractive_summary = extractive_summarization(transcript)
             return extractive_summary, "extractive"
         except Exception as extractive_error:
-            print(f"❌ Extractive summarization also failed: {extractive_error}")
+            # print(f"❌ Extractive summarization also failed: {extractive_error}")
             return f"Unable to generate summary. Groq error: {groq_result['error']}. Extractive error: {extractive_error}", "failed"
 
 def get_transcript_with_retry(transcriber, audio_file, max_retries=3):
@@ -2072,7 +2076,7 @@ def get_transcript_with_retry(transcriber, audio_file, max_retries=3):
                     
             # If we get here, we need to try again
             if attempt < max_retries - 1:
-                print(f"Retry transcription in 2 seconds...")
+                # print(f"Retry transcription in 2 seconds...")
                 time.sleep(2)
                 
         except Exception as e:
@@ -2127,7 +2131,7 @@ def summarize_text():
         if not text:
             return jsonify({"error": "No text provided"}), 400
         
-        print(f"Summarizing text of {len(text)} characters in {language}")
+        # print(f"Summarizing text of {len(text)} characters in {language}")
         
         # Generate summary using smart summarization
         summary, method = smart_summarization(text, language)
@@ -2140,7 +2144,7 @@ def summarize_text():
         })
         
     except Exception as e:
-        print(f"Error in text summarization: {str(e)}")
+        # print(f"Error in text summarization: {str(e)}")
         return jsonify({
             "error": f"Failed to summarize text: {str(e)}"
         }), 500
@@ -2151,7 +2155,7 @@ def get_english_transcript():
     if not videolink:
         return jsonify({"error": "No video link provided"}), 400
 
-    print(f"Processing English video: {videolink}")
+    # print(f"Processing English video: {videolink}")
     audio_file = None
     transcript_method = "unknown"
 
@@ -2201,7 +2205,8 @@ def get_english_transcript():
     except Exception as e:
         print(f"❌ Error in English transcript processing: {str(e)}")
         return jsonify({
-            "error": f"Failed to process video: {str(e)}", 
+            "error": f"Failed to process video: Some error occured", 
+            # "error": f"Failed to process video: {str(e)}", 
             "suggestion": "This might be due to video restrictions or server limitations. Please try another video."
         }), 500
     finally:

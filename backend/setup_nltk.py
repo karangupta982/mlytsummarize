@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 """
 This script downloads all the necessary NLTK data packages required for the 
